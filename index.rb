@@ -1,0 +1,7 @@
+load 'questions.rb'
+load 'aa_table.rb'
+load 'user.rb'
+load 'reply.rb'
+load 'question.rb'
+load 'question_follower.rb'
+load 'question_like.rb'
