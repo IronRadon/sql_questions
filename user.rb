@@ -28,6 +28,29 @@ class User < AATable
     Reply.find_by_user_id(@id)
   end
 
+  def average_karma
+    avg_karma = QuestionsDatabase.instance.execute(<<-SQL, :user_id => @id)
+      SELECT
+        COUNT(*) * 1.0 /
+      	(
+          SELECT
+      	    COUNT(*)
+      	  FROM
+      	    questions
+      	  WHERE
+      	    author_id = :user_id
+        )
+      FROM
+      	question_likes
+      JOIN
+      	questions ON question_likes.question_id = questions.id
+      WHERE
+        questions.author_id = :user_id
+
+    SQL
+    avg_karma[0].values[0]
+  end
+
   def followed_questions
     Question_Follower.followed_questions_for_user_id(@id)
   end
@@ -36,39 +59,4 @@ class User < AATable
     Question_Like.liked_questions_for_user_id(@id)
   end
 
-  def average_karma
-    avg_karma = QuestionsDatabase.instance.execute(<<-SQL, :user_id => @id)
-    SELECT
-      COUNT(*) * 1.0 /
-    	(
-        SELECT
-    	    COUNT(*)
-    	  FROM
-    	    questions
-    	  WHERE
-    	    author_id = :user_id
-      )
-    FROM
-    	question_likes
-    JOIN
-    	questions
-    ON
-      question_likes.question_id = questions.id
-    WHERE
-      questions.author_id = :user_id
-
-
-    SQL
-    avg_karma[0].values[0]
-  end
-
-  # def save
-#     QuestionsDatabase.instance.execute(<<-SQL, :fname => @fname, :lname => @lname)
-#       INSERT INTO
-#         users (fname, lname)
-#       VALUES
-#         (:fname, :lname)
-#     SQL
-#     self.id = QuestionsDatabase.instance.last_insert_row_id
-#   end
 end

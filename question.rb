@@ -42,10 +42,6 @@ class Question < AATable
     User.new(author[0])
   end
 
-  def replies
-    Reply.find_by_question_id(@id)
-  end
-
   def followers
     Question_Follower.followers_for_question_id(@id)
   end
@@ -56,6 +52,10 @@ class Question < AATable
 
   def num_likes
     Question_Like.num_likes_for_question_id(@id)
+  end
+
+  def replies
+    Reply.find_by_question_id(@id)
   end
 
 end

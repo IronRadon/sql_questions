@@ -11,29 +11,8 @@ class Question_Follower < AATable
       WHERE
         questions.id = :question_id
 
-      SQL
+    SQL
       .map {|u| User.new(u)}
-  end
-
-  def self.most_followed_questions(n)
-    QuestionsDatabase.instance.execute(<<-SQL, :n => n)
-      SELECT
-        questions.*
-      FROM
-       question_followers
-      JOIN
-        questions
-      ON
-        questions.id = question_followers.question_id
-      GROUP BY
-        questions.id
-      ORDER BY
-        COUNT(*)
-      LIMIT
-        :n
-
-      SQL
-      .map {|q| Question.new(q)}
   end
 
   def self.followed_questions_for_user_id(u_id)
@@ -47,7 +26,26 @@ class Question_Follower < AATable
       WHERE
         users.id = :user_id
 
-      SQL
+    SQL
+      .map {|q| Question.new(q)}
+  end
+
+  def self.most_followed_questions(n)
+    QuestionsDatabase.instance.execute(<<-SQL, :n => n)
+      SELECT
+        questions.*
+      FROM
+       question_followers
+      JOIN
+        questions ON questions.id = question_followers.question_id
+      GROUP BY
+        questions.id
+      ORDER BY
+        COUNT(*)
+      LIMIT
+        :n
+
+    SQL
       .map {|q| Question.new(q)}
   end
 

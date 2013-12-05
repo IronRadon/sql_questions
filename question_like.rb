@@ -37,7 +37,7 @@ class Question_Like < AATable
       WHERE
         question_likes.user_id = :user_id
 
-      SQL
+    SQL
       .map {|q| Question.new(q)}
   end
 
@@ -48,9 +48,7 @@ class Question_Like < AATable
       FROM
        question_likes
       JOIN
-        questions
-      ON
-        questions.id = question_likes.question_id
+        questions ON questions.id = question_likes.question_id
       GROUP BY
         questions.id
       ORDER BY

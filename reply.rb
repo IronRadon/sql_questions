@@ -14,12 +14,12 @@ class Reply < AATable
 
   def self.find_by_question_id(q_id)
     QuestionsDatabase.instance.execute(<<-SQL, :question_id => q_id)
-    SELECT
-      *
-    FROM
-      replies
-    WHERE
-      replies.question_id = :question_id
+      SELECT
+        *
+      FROM
+        replies
+      WHERE
+        replies.question_id = :question_id
 
     SQL
     .map {|r| Reply.new(r)}
@@ -32,7 +32,7 @@ class Reply < AATable
       FROM
         replies
       WHERE
-      replies.author_id = :id
+        replies.author_id = :id
 
     SQL
     .map {|r| Reply.new(r)}
@@ -59,17 +59,17 @@ class Reply < AATable
     User.new(author[0])
   end
 
-  def question
-    question = QuestionsDatabase.instance.execute(<<-SQL, :id => @question_id)
+  def child_replies
+    children = QuestionsDatabase.instance.execute(<<-SQL, :id => @id)
       SELECT
         *
       FROM
-        questions
+        replies
       WHERE
-        id = :id
+        replies.parent_id = :id
 
     SQL
-    Question.new(question[0])
+    .map {|r| Reply.new(r)}
   end
 
   def parent_reply
@@ -86,17 +86,17 @@ class Reply < AATable
     Reply.new(parent[0])
   end
 
-  def child_replies
-    children = QuestionsDatabase.instance.execute(<<-SQL, :id => @id)
+  def question
+    question = QuestionsDatabase.instance.execute(<<-SQL, :id => @question_id)
       SELECT
         *
       FROM
-        replies
+        questions
       WHERE
-        replies.parent_id = :id
+        id = :id
 
     SQL
-    .map {|r| Reply.new(r)}
+    Question.new(question[0])
   end
 
 end
